@@ -1,0 +1,5 @@
+,average_score_wikipedia,average_score_matched,average_score_unmatched,percent_matched,number_matched,number_unmatched,counts
+presidente,10.06640625,19.56451612903226,7.030927835051546,0.2421875,62,194,"{'presidente': 0, 'presidenta': 11}"
+presidenta,11.056768558951966,19.74025974025974,6.657894736842105,0.33624454148471616,77,152,"{'presidente': 4, 'presidenta': 0}"
+vicepresidente,6.818181818181818,,6.818181818181818,0.0,0,11,"{'vicepresidente': 0, 'vicepresidenta': 4}"
+vicepresidenta,7.875,16.714285714285715,4.235294117647059,0.2916666666666667,14,34,"{'vicepresidente': 0, 'vicepresidenta': 0}"
