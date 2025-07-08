@@ -6,33 +6,10 @@ from collections import Counter
 from itertools import chain
 import ahocorasick
 import ast
-from analyze_m_data import get_occupations_list_en, get_occupations_list
+from analysis.occ_frequency.clean_data import get_occupations_list_en, get_occupations_list
 from spacy.lang.de import German
 from spacy.lang.it import Italian
 from spacy.lang.es import Spanish 
-
-# male_filename = "/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/datasets/update_sets/de_male_dataset.csv"
-# male_tail = "/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/datasets/update_sets/de_male_tail.csv"
-# female_filename = "/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/datasets/final_sets/de_female_dataset.csv"
-
-# male_df1 = pd.read_csv(male_filename, names= ['wikidata_code', 'title', 'intro', 'gender', 'occupations'],header=0, encoding='utf-8',index_col=0)
-# male_tail = pd.read_csv(male_tail, names= ['wikidata_code', 'title', 'intro', 'gender', 'occupations'],header=0, encoding='utf-8')
-# print(male_df1.head(10))
-# print(male_tail.head(10))
-# male_df = pd.concat([male_df1, male_tail], axis=0)
-# print(male_df.head(10))
-# print(male_df.tail(10))
-# print(male_df.shape[0])
-# male_df.to_csv('/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/datasets/update_sets/de_male_dataset2.csv')
-
-# female_df = pd.read_csv(female_filename, names= ['wikidata_code', 'title', 'intro', 'gender', 'occupations'],header=0, encoding='utf-8')
-# female_df_length = female_df.shape[0]
-# male_df_length = male_df.shape[0]
-# extra = male_df_length-female_df_length
-# male_df = male_df.head(-extra)
-# print(f'male_df shape: {male_df.shape[0]}')
-# print(f'female_df shape: {female_df.shape[0]}')
-# male_df.to_csv('/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/datasets/final_sets/de_male_dataset1.csv')
 
 def remove_html_en(filename):
     # remove html, clean and lowercase intro texts
@@ -55,8 +32,6 @@ def remove_html_en(filename):
     return small_df
 
 df = remove_html_en("/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/datasets/redo/en_female_dataset.csv")
-# print(df.head(-10))
-# df = df.sample(50)
 
 def get_first_sentence(text):
   # split intros into sentences
@@ -90,8 +65,7 @@ def get_named_entities(text):
         named_entities.append(ent.text)
   return named_entities
 
-text = "karl m. baer (20 may 1885 – 26 june 1956) was a german-israeli author, social worker, reformer, suffragist and zionist. born intersex and assigned female at birth, he came out as a trans man in 1904 at the age of 19. in december 1906, he became the first transgender person to undergo sex reassignment surgery, and he became one of the first transgender people to gain full legal recognition of his gender identity by having a male birth certificate issued in january 1907. however, some researchers have disputed his label as a trans man, theorizing that he was intersex, and not transgender.baer wrote notes for sexologist magnus hirschfeld on his experiences growing up female while feeling inside that he was male. together they developed these notes into the semi-fictional, semi-autobiographical aus eines mannes mädchenjahren (memoirs of a man's maiden years) (1907) which was published under the pseudonym n.o. body. the book ""was immensely popular,"" being ""adapted twice to film, in 1912 and 1919."" baer also gained the right to marry and did so in october 1907.despite him having undergone gender reaffirming surgery in 1906, exact records of the medical procedures he went through are unknown, as his medical records were burned in the 1930s nazi book burning, that targeted hirschfield studies specifically."
-# print(get_named_entities(text))
+
 df["named_entities"] = df["intro"].apply(get_named_entities)
 
 def get_occupations_en(df): 
@@ -150,15 +124,12 @@ def get_occupations_de(df):
     small_df['intro'] = small_df['intro'].str.casefold()
     small_df['title'] = small_df['title'].str.casefold()
     small_df['first_sentence'] = small_df['first_sentence'].str.casefold()
-    # the lists in the occupations column were not actual lists but rather string literals
-    # this code converts them back into lists  
-    # small_df['occupations'] = small_df['occupations'].apply(ast.literal_eval)
+   
 
     # get a set of german occupation words 
     de_full_unique_occupations_male = get_occupations_list('/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/de_occ_titles.csv', 'male')
     de_full_unique_occupations_female = get_occupations_list('/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/de_occ_titles.csv', 'female')
-    # full_unique_occupations = get_occupations_list_en('/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/it_occ_list_full.csv')
-    # full_unique_occupations = get_occupations_list_en('/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/es_occ_list_unique.csv')
+
     small_df['intro'] = small_df['intro'].astype(str)
     small_df['title'] = small_df['title'].astype(str)
     
@@ -188,15 +159,6 @@ def get_occupations_de(df):
     small_df['overlapping_occupations_sentence1_male'] = small_df['first_sentence'].apply(find_terms_de_male)
     small_df['overlapping_occupations_female'] = small_df['intro'].apply(find_terms_de_female)
     small_df['overlapping_occupations_sentence1_female'] = small_df['first_sentence'].apply(find_terms_de_female)
-    # want to see if male occupation names show up in title field as last names 
-    # small_df['occupation_in_last_name'] = small_df['title'].apply(find_terms_de)
-    # small_df['overlapping_occupations'] = small_df['intro'].apply(find_terms_en)
-   
-    # overlapping_occ_counts = Counter(chain.from_iterable(small_df['overlapping_occupations']))
-    # print(overlapping_occ_counts)
-  
-    # smaller_df = small_df[small_df['overlapping_occupations'].map(len)>0]
-    # smaller_df = smaller_df[smaller_df['overlapping_occupations'].map(len)>0]
 
     print("length of dataset:")
     print(small_df.shape[0])
@@ -204,13 +166,3 @@ def get_occupations_de(df):
     small_df.to_csv('/mount/arbeitsdaten/studenten2/caulfiea/masters_thesis/sets_for_analysis/redo/de_male_occ_full_data.csv')
 
 # get_occupations_de(df)
-
-# Steps 
-# 1. Read in datasets, create dataframe (maybe just create one dataset for each language?)
-# 1b. For male sets, cut off the extra biographies to make them as long as the female ones 
-# 2. Strip html from the intros 
-# 3. Split intros into sentences 
-# 4. Do NER, find names in text, remove them?
-# 5. Do dictionary lookup for occupation titles on first sentence, then all sentences, ignoring names for matching 
-# 6. For Spanish, Italian, German do POS tagging of found occupational titles to get gender 
-# 7. 

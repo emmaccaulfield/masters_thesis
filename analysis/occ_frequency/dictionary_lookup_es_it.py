@@ -6,7 +6,6 @@ from collections import Counter
 from itertools import chain
 import ahocorasick
 import ast
-from analysis.occ_frequency.analyze_m_data import get_occupations_list_en, get_occupations_list
 from spacy.lang.de import German
 from spacy.lang.it import Italian
 from spacy.lang.es import Spanish 
@@ -28,28 +27,17 @@ print(es_occ_list[:10])
 
 def stem_titles(titles):
   from nltk.stem import SnowballStemmer 
-  stemmer = SnowballStemmer("spanish") # Choose a language
+  stemmer = SnowballStemmer("spanish") # choose a language
   stems = []
   for title in titles:
      stem = stemmer.stem(title)
      stems.append(stem)
   return stems
 
-
-def lemmatize_titles(titles): 
-  titles = " ".join(titles)
-  lemmatizer = spacy.load('it_core_news_sm')
-  doc = lemmatizer(titles)
-  words_lemmas_list = [token.lemma_ for token in doc]
-  return words_lemmas_list
-
-# lemmas = lemmatize_titles(it_occ_list)
-# print(lemmas[:10])
-
 def remove_html_en(filename):
     # remove html, clean and lowercase intro texts
     new_df = pd.read_csv(filename, names= ['wikidata_code', 'title', 'intro', 'gender', 'occupations'],header=0, encoding='utf-8')
-    # new_df = new_df.head(100)
+
     print(new_df.shape[0])
     print((new_df['intro'] == 'No intro available').sum())
     # remove biographies with no intro 
